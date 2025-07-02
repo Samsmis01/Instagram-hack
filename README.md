@@ -16,9 +16,8 @@ Outil de phishing avancé avec affichage en temps réel des identifiants captur�
 
    git clone https://github.com/Samsmis01/Instagram-hack.git
    
-cd Instagram-hack
-
-bash start.sh
+ cd Instagram-hack
+ bash start.sh
 
   ⚠️ NB:CECI EST DANS LE CADRE ÉDUCATIF, EN CAS D'UTILISATION
   CONTRAIRE A L'ÉTHIQUE NOUS NE SOMMES PAS RESPONSABLE DE VOS
