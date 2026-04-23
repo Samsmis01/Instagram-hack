@@ -1,6 +1,6 @@
 services:
   - type: web
     name: mon-app-php
-    env: php
+    runtime: php
     buildCommand: ""
     startCommand: "php -S 0.0.0.0:$PORT"
