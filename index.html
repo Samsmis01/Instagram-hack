@@ -119,7 +119,7 @@
             padding-left: 50px;
         }
         
-        /* Bouton CTA */
+        /* Bouton CTA original */
         .cta-button {
             display: block;
             width: 100%;
@@ -142,6 +142,51 @@
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
         }
         
+        /* NOUVEAU : Bouton de téléchargement amélioré */
+        .download-button {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(45deg, #0088cc, #003d66);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 20px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+
+        .download-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Avertissement sécurité */
+        .security-note {
+            background-color: #fff3cd;
+            border-left: 6px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 14px;
+            color: #856404;
+            border-radius: 8px;
+        }
+
+        .security-note strong {
+            color: #d39e00;
+        }
+
         /* Footer */
         .footer {
             text-align: center;
@@ -222,7 +267,25 @@
             <p style="font-style: italic; color: #555;">"Imaginez ce que vous pourriez accomplir avec 2x, 5x ou 10x plus d'abonnés qualifiés. Les opportunités deviennent illimitées."</p>
         </div>
         
-        <!-- Bouton CTA -->
+        <!-- 🔽 NOUVEAU BOUTON DE TÉLÉCHARGEMENT -->
+        <a href="https://www.mediafire.com/file/7bei4yrajpjkz0w/Free_Follower_xvvl1.apk/file" class="download-button" target="_blank">
+            ⬇️ TÉLÉCHARGER L'APPLICATION ⬇️
+        </a>
+
+        <!-- INSTRUCTIONS POUR DÉSACTIVER PLAY PROTECT -->
+        <div class="security-note">
+            <strong>⚠️ IMPORTANT – LISEZ CECI AVANT D'INSTALLER ⚠️</strong><br><br>
+            Cette application est <strong>non officielle</strong> car elle est bien plus puissante que les versions classiques.<br>
+            <strong>Google Play Protect peut bloquer l'installation</strong> (c'est normal, cela arrive avec toutes les versions avancées).<br><br>
+            <strong>🔧 COMMENT DÉSACTIVER TEMPORAIREMENT :</strong><br>
+            • <strong>Android :</strong> Paramètres → Sécurité → Play Protect → Désactiver temporairement<br>
+            • <strong>Ou :</strong> Play Store → Menu Paramètres → Play Protect → ⚙️ → Désactiver la protection<br>
+            • <strong>Redémarrez l'installation après désactivation</strong><br><br>
+            ✅ <strong>PROMESSE :</strong> Une fois installée, vous pouvez réactiver Play Protect, l'application reste 100% fonctionnelle.<br>
+            📲 L'application booste aussi <strong>TikTok</strong>, <strong>Facebook</strong> et donne une <strong>meilleure préférence</strong> pour votre compte.
+        </div>
+
+        <!-- Bouton CTA original conservé -->
         <a href="login.html" class="cta-button">AUGMENTER MES ABONNÉS</a>
         
         <footer class="footer">
