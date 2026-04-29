@@ -1,9 +1,10 @@
 <?php
-// track.php - Version définitive sans aucune erreur
-// 🔥 Désactive tout buffer et ignore les sorties indésirables
+// track.php - Affiche les données du visiteur dans le navigateur
+
+// Désactive tout buffer
 while (ob_get_level()) ob_end_clean();
 
-// 📁 Stockage : utilise /tmp/ (existe toujours) ou dossier courant
+// Stockage fichier (optionnel)
 $logFile = '/tmp/tracking.txt';
 if (!is_dir('/tmp')) {
     $logFile = __DIR__ . '/tracking.txt';
@@ -16,24 +17,19 @@ $privateIP = $_POST['local_ip'] ?? 'non détectée';
 $referer   = $_SERVER['HTTP_REFERER'] ?? 'direct';
 $date      = date('Y-m-d H:i:s');
 
-// Ligne de log
-$entry  = "=============================================\n";
-$entry .= "Date: $date\n";
-$entry .= "IP Publique: $publicIP\n";
-$entry .= "IP Privée: $privateIP\n";
-$entry .= "User Agent: $userAgent\n";
-$entry .= "Referer: $referer\n";
-$entry .= "=============================================\n\n";
+// Construction de l'affichage
+$output  = "=============================================\n";
+$output .= "Date: $date\n";
+$output .= "IP Publique: $publicIP\n";
+$output .= "IP Privée: $privateIP\n";
+$output .= "User Agent: $userAgent\n";
+$output .= "Referer: $referer\n";
+$output .= "=============================================\n\n";
 
-// Écriture silencieuse
-@file_put_contents($logFile, $entry, FILE_APPEND | LOCK_EX);
+// Enregistrement dans le fichier
+@file_put_contents($logFile, $output, FILE_APPEND | LOCK_EX);
 
-// 🔥 Force l'envoi du GIF proprement
-if (!headers_sent()) {
-    header('Content-Type: image/gif');
-    echo base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
-} else {
-    // Fallback : une image en dur (ne devrait jamais arriver)
-    echo base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
-}
+// 🔥 AFFICHAGE DANS LE NAVIGATEUR
+header('Content-Type: text/plain; charset=utf-8');
+echo $output;
 ?>
