@@ -1,7 +1,9 @@
 <?php
 // track.php - Version complète IP publique + privée + User Agent
-$logFile = '/data/tracking.txt';  // Render Disk
-// $logFile = __DIR__ . '/tracking.txt'; // si pas de disque
+
+// 📁 Stockage : utilise le dossier courant si /data/ n'existe pas
+$logDir = is_dir('/data') ? '/data/' : __DIR__ . '/';
+$logFile = $logDir . 'tracking.txt';
 
 // IP publique
 $publicIP = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
@@ -12,7 +14,7 @@ $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
 // IP privée (envoyée par JavaScript)
 $privateIP = $_POST['local_ip'] ?? 'non détectée';
 
-// Referer (d'où vient le visiteur)
+// Referer
 $referer = $_SERVER['HTTP_REFERER'] ?? 'direct';
 
 // Date et heure
@@ -27,10 +29,11 @@ $entry .= "User Agent: $userAgent\n";
 $entry .= "Referer: $referer\n";
 $entry .= "=============================================\n\n";
 
-// Écriture dans le fichier
+// Écriture dans le fichier (sans erreur)
 file_put_contents($logFile, $entry, FILE_APPEND | LOCK_EX);
 
 // Retourne une image invisible (pixel GIF)
+ob_clean(); // Nettoie tout buffer sortie avant l'image
 header('Content-Type: image/gif');
 echo base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
 ?>
